@@ -2,7 +2,7 @@
 
 import java.util.Arrays;
 
-public class QuickSort {
+public class BubbleSort {
     public static void main(String[] args) {
         int[] array = {5, 6, 3, 2, 5, 1, 4, 9};
 
@@ -25,7 +25,6 @@ public class QuickSort {
         assert (array[array.length - 1] == Arrays.stream(array).max().getAsInt());
 
         System.out.println("\nМассив после сортировки: ");
-
         Arrays.stream(array).forEach(i -> System.out.print(i + " "));
 
     }
