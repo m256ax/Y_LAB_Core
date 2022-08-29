@@ -9,7 +9,7 @@ public class QuickSort {
         System.out.println("Массив до сортировки: ");
         Arrays.stream(array).forEach(i -> System.out.print(i + " "));
 
-        assert (array == null);
+        assert (array != null);
 
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array.length - 1; j++) {
@@ -21,7 +21,7 @@ public class QuickSort {
             }
         }
 
-        assert (array[0] != Arrays.stream(array).min().getAsInt());
+        assert (array[0] == Arrays.stream(array).min().getAsInt());
         assert (array[array.length - 1] == Arrays.stream(array).max().getAsInt());
 
         System.out.println("\nМассив после сортировки: ");
