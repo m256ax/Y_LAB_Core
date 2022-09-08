@@ -1,4 +1,6 @@
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
@@ -112,12 +114,7 @@ public class ComplexExamples {
                 Value:1
          */
 
-
-
-        for (Map.Entry<String, Long> e : getMap(RAW_DATA).entrySet()) {
-            System.out.println("Key: " + e.getKey() + "\n" +
-                    "Value: " + e.getValue() + "\n   ");
-        }
+        getMap(RAW_DATA);
 
         /*
         Task2
@@ -128,7 +125,7 @@ public class ComplexExamples {
         Integer[] array = new Integer[]{3, 4, 2, 7};
         int sum = 10;
 
-        System.out.println(Arrays.toString(getTerms(array, sum)));
+        getTerms(array, sum);
 
         /*
         Task3
@@ -141,76 +138,70 @@ public class ComplexExamples {
                     fuzzySearch("cwheeel", "cartwheel"); // false
                     fuzzySearch("lw", "cartwheel"); // false
          */
-
-        System.out.println(fuzzySearch("car", "ca6$$#_rtwheel")); // true
-        System.out.println(fuzzySearch("cwhl", "cartwheel")); // true
-        System.out.println(fuzzySearch("cwhee", "cartwheel")); // true
-        System.out.println(fuzzySearch("cartwheel", "cartwheel")); // true
-        System.out.println(fuzzySearch("cwheeel", "cartwheel")); // false
-        System.out.println(fuzzySearch("lw", "cartwheel")); // false
-
+        
     }
 
     /*
         Метод для Task1
      */
 
-    static  Map<String, Long> getMap (Person[] data) {
+    //    public static  Map<String, Long> getMap (Person[] data) {
+    public static void getMap(Person[] data) {
 
-        return Arrays.stream(data)
+        Function<Map.Entry<String, Long>, String> func = e ->
+                "Key: " + e.getKey() + "\n" + "Value: " + e.getValue();
+
+        Arrays.stream(data)
                 .distinct()
                 .sorted(Comparator.comparingInt(Person::getId))
-                .collect(groupingBy(Person::getName, counting()));
+                .collect(groupingBy(Person::getName, counting()))
+                .entrySet()
+                .stream()
+                .map(e -> func.apply(e))
+                .toList()
+                .iterator()
+                .forEachRemaining(System.out::println);
     }
 
     /*
         Метод для Task2
      */
-    static Integer[] getTerms(Integer[] arr, int d) {
+    public static void getTerms(Integer[] arr, int d) {
 
         List<Integer> integers = Arrays.asList(arr);
 
-        return integers.stream()
+        integers.stream()
                 .flatMap(a ->
                         integers.stream()
                                 .filter(b -> a != b && a + b == d)
                                 .map(b -> new Integer[]{a, b}))
                 .findFirst()
-                .get();
-
+                .ifPresent(a -> System.out.println(Arrays.toString(a)));
     }
 
     /*
         Метод для Task3
      */
-    private static boolean fuzzySearch(String word, String lotsOf) {
-        char[] firstWord = word.toCharArray();
-        List<Character> characters = lotsOf.chars()
-                                            .mapToObj(c -> (char) c)
-                                            .collect(Collectors.toList());
-
-        int countDownLength = firstWord.length;
+    public static boolean fuzzySearch(String word, String lotsOf) {
         int previousCharPosition = 0;
 
-        for (int i = 0; i < firstWord.length; i++) {
+        for (int position = 0; position < word.length(); position++) {
 
-            for (int currentCharPosition = 0; currentCharPosition < characters.size(); currentCharPosition++) {
-                if (firstWord[i] == characters.get(currentCharPosition)) {
+            for (int currentCharPosition = previousCharPosition; currentCharPosition < lotsOf.length(); currentCharPosition++) {
+                if (word.charAt(position) == lotsOf.charAt(currentCharPosition)) {
 
-                    if (previousCharPosition > currentCharPosition) {
-                        return false;
-                    }
-                    previousCharPosition = currentCharPosition;
-                    characters.remove(currentCharPosition);
-                    countDownLength--;
+                    previousCharPosition = ++currentCharPosition;
 
-                    if (countDownLength == 0) {
+                    if (position == word.length() - 1) {
                         return true;
                     }
                     break;
+                } else if (currentCharPosition == lotsOf.length() - 1) {
+                    return false;
                 }
             }
         }
+
         return false;
     }
 }
