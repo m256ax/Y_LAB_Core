@@ -30,7 +30,7 @@ public class ComplexExamplesTest {
         exeption.put("Harry", 3L);
         exeption.put("Jack", 1L);
 
-//        assertTrue(ComplexExamples.getMap(RAW_DATA).equals(exeption));
+//        assertTrue(ComplexExamples.getMap(RAW_DATA).contain("Amelia"));
 
     }
 

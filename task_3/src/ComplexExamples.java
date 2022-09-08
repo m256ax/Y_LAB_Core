@@ -2,6 +2,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.*;
 
@@ -138,7 +139,12 @@ public class ComplexExamples {
                     fuzzySearch("cwheeel", "cartwheel"); // false
                     fuzzySearch("lw", "cartwheel"); // false
          */
-        
+        System.out.println(fuzzySearch("car", "ca6$$#_rtwheel"));
+        System.out.println(fuzzySearch("cwhl", "cartwheel"));
+        System.out.println(fuzzySearch("cwhee", "cartwheel"));
+        System.out.println(fuzzySearch("cartwheel", "cartwheel"));
+        System.out.println(fuzzySearch("cwheeel", "cartwheel"));
+        System.out.println(fuzzySearch("lw", "cartwheel"));
     }
 
     /*
@@ -157,7 +163,7 @@ public class ComplexExamples {
                 .collect(groupingBy(Person::getName, counting()))
                 .entrySet()
                 .stream()
-                .map(e -> func.apply(e))
+                .map(func)
                 .toList()
                 .iterator()
                 .forEachRemaining(System.out::println);
@@ -173,7 +179,7 @@ public class ComplexExamples {
         integers.stream()
                 .flatMap(a ->
                         integers.stream()
-                                .filter(b -> a != b && a + b == d)
+                                .filter(b -> !Objects.equals(a, b) && a + b == d)
                                 .map(b -> new Integer[]{a, b}))
                 .findFirst()
                 .ifPresent(a -> System.out.println(Arrays.toString(a)));
@@ -183,25 +189,25 @@ public class ComplexExamples {
         Метод для Task3
      */
     public static boolean fuzzySearch(String word, String lotsOf) {
-        int previousCharPosition = 0;
 
-        for (int position = 0; position < word.length(); position++) {
+        final int[] previousCharPosition = {0};
 
-            for (int currentCharPosition = previousCharPosition; currentCharPosition < lotsOf.length(); currentCharPosition++) {
-                if (word.charAt(position) == lotsOf.charAt(currentCharPosition)) {
+        Function<Integer, Integer> function = charFromWord -> {
+            for (int currentCharPosition = previousCharPosition[0]; currentCharPosition < lotsOf.length(); currentCharPosition++) {
+                if (charFromWord == lotsOf.charAt(currentCharPosition)) {
 
-                    previousCharPosition = ++currentCharPosition;
-
-                    if (position == word.length() - 1) {
-                        return true;
-                    }
-                    break;
-                } else if (currentCharPosition == lotsOf.length() - 1) {
-                    return false;
+                    previousCharPosition[0] = ++currentCharPosition;
+                    return charFromWord;
                 }
             }
-        }
+                    return -1;
+        };
 
-        return false;
+        int[] res = word.chars()
+                .map(function::apply)
+                .filter(i -> i != -1)
+                .toArray();
+
+        return Arrays.equals(word.chars().toArray(), res);
     }
 }
