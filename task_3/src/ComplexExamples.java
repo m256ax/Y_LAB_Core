@@ -3,6 +3,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
 
@@ -158,6 +159,7 @@ public class ComplexExamples {
                 "Key: " + e.getKey() + "\n" + "Value: " + e.getValue();
 
         Arrays.stream(data)
+                .flatMap(Stream::ofNullable)
                 .distinct()
                 .sorted(Comparator.comparingInt(Person::getId))
                 .collect(groupingBy(Person::getName, counting()))
@@ -177,8 +179,10 @@ public class ComplexExamples {
         List<Integer> integers = Arrays.asList(arr);
 
         integers.stream()
+                .flatMap(Stream::ofNullable)
                 .flatMap(a ->
                         integers.stream()
+                                .flatMap(Stream::ofNullable)
                                 .filter(b -> !Objects.equals(a, b) && a + b == d)
                                 .map(b -> new Integer[]{a, b}))
                 .findFirst()
@@ -189,6 +193,8 @@ public class ComplexExamples {
         Метод для Task3
      */
     public static boolean fuzzySearch(String word, String lotsOf) {
+
+        if(word == null || lotsOf == null) return false;
 
         final int[] previousCharPosition = {0};
 
