@@ -116,7 +116,9 @@ public class ComplexExamples {
                 Value:1
          */
 
-        getMap(RAW_DATA);
+        for (Map.Entry<String, Long> entry : getMap(RAW_DATA).entrySet()) {
+            System.out.println("Key: " + entry.getKey() + "\n" + "Value: " + entry.getValue());
+        }
 
         /*
         Task2
@@ -127,7 +129,7 @@ public class ComplexExamples {
         Integer[] array = new Integer[]{3, 4, 2, 7};
         int sum = 10;
 
-        getTerms(array, sum);
+        System.out.println(Arrays.toString(getTerms(array, sum)));
 
         /*
         Task3
@@ -152,41 +154,29 @@ public class ComplexExamples {
         Метод для Task1
      */
 
-    //    public static  Map<String, Long> getMap (Person[] data) {
-    public static void getMap(Person[] data) {
+    public static Map<String, Long> getMap(Person[] data) {
 
-        Function<Map.Entry<String, Long>, String> func = e ->
-                "Key: " + e.getKey() + "\n" + "Value: " + e.getValue();
-
-        Arrays.stream(data)
+        return Arrays.stream(data)
                 .flatMap(Stream::ofNullable)
                 .distinct()
-                .sorted(Comparator.comparingInt(Person::getId))
-                .collect(groupingBy(Person::getName, counting()))
-                .entrySet()
-                .stream()
-                .map(func)
-                .toList()
-                .iterator()
-                .forEachRemaining(System.out::println);
+                .collect(groupingBy(Person::getName, counting()));
     }
 
     /*
         Метод для Task2
      */
-    public static void getTerms(Integer[] arr, int d) {
+    public static Integer[] getTerms(Integer[] array, int sum) {
 
-        List<Integer> integers = Arrays.asList(arr);
-
-        integers.stream()
-                .flatMap(Stream::ofNullable)
-                .flatMap(a ->
-                        integers.stream()
-                                .flatMap(Stream::ofNullable)
-                                .filter(b -> !Objects.equals(a, b) && a + b == d)
-                                .map(b -> new Integer[]{a, b}))
-                .findFirst()
-                .ifPresent(a -> System.out.println(Arrays.toString(a)));
+        return Arrays.stream(array)//создаем первый поток из массива чисел переданных в метод
+                .flatMap(Stream::ofNullable)// предотвращаем попадание null
+                .flatMap(integerFromFirstStream -> //берем первое число из потока
+                        Arrays.stream(array) //создаем второй поток из массива чисел переданных в метод
+                                .flatMap(Stream::ofNullable)// предотвращаем попадание null
+                                .skip(1) //пропускаем первое число из потока, для исключения сложения первого числа с самим собой
+                                .filter(integerFromSecondStream -> integerFromFirstStream + integerFromSecondStream == sum) //проверяем на выполнение условия
+                                .map(secondInteger -> new Integer[]{integerFromFirstStream, secondInteger}))// при выполнении условия числа из первого и второго потоков складываем в массив
+                .findFirst() // получаем первый массив со значениями
+                .orElse(new Integer[]{0,0}); //при не выполнении условий - вовращаем массив заполненный 00
     }
 
     /*
@@ -194,7 +184,7 @@ public class ComplexExamples {
      */
     public static boolean fuzzySearch(String word, String lotsOf) {
 
-        if(word == null || lotsOf == null) return false;
+        if (word == null || lotsOf == null) return false;
 
         final int[] previousCharPosition = {0};
 
@@ -206,7 +196,7 @@ public class ComplexExamples {
                     return charFromWord;
                 }
             }
-                    return -1;
+            return -1;
         };
 
         int[] res = word.chars()
