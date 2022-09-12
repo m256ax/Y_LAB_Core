@@ -159,6 +159,7 @@ public class ComplexExamples {
         return Arrays.stream(data)
                 .flatMap(Stream::ofNullable)
                 .distinct()
+                .sorted(Comparator.comparingInt(Person::getId))
                 .collect(groupingBy(Person::getName, counting()));
     }
 
