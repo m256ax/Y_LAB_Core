@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -128,8 +129,12 @@ public class ComplexExamples {
 
         Integer[] array = new Integer[]{3, 4, 2, 7};
         int sum = 10;
+        long from = System.currentTimeMillis();
+        System.out.println(from);
 
         System.out.println(Arrays.toString(getTerms(array, sum)));
+
+        System.out.println(System.currentTimeMillis() - from);
 
         /*
         Task3
@@ -168,6 +173,17 @@ public class ComplexExamples {
      */
     public static Integer[] getTerms(Integer[] array, int sum) {
 
+//        Map<Integer, Integer> integerMap = new HashMap<>();
+//
+//        for(Integer integer: array) {
+//            Integer search = sum - integer;
+//            if(integerMap.containsKey(integer)) {
+//                return new Integer[] {integerMap.get(integer), integer};
+//            } else {
+//                integerMap.put(search, integer);
+//            }
+//        }
+
         return Arrays.stream(array)//создаем первый поток из массива чисел переданных в метод
                 .flatMap(Stream::ofNullable)// предотвращаем попадание null
                 .flatMap(integerFromFirstStream -> //берем первое число из потока
@@ -178,6 +194,7 @@ public class ComplexExamples {
                                 .map(secondInteger -> new Integer[]{integerFromFirstStream, secondInteger}))// при выполнении условия числа из первого и второго потоков складываем в массив
                 .findFirst() // получаем первый массив со значениями
                 .orElse(new Integer[]{0,0}); //при не выполнении условий - вовращаем массив заполненный 00
+//        return new Integer[]{0,0};
     }
 
     /*
